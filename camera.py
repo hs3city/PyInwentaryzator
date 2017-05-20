@@ -5,6 +5,7 @@ Webcam api wrapper
 """
 import cv2
 import threading
+import time
 
 
 class CameraWrapper(object):
@@ -36,7 +37,7 @@ class CameraWrapper(object):
             # without waitKey the gui will not show up
             cv2.waitKey(1)
 
-        self._vc.release()
+        camera.release()
         # Try kicking the windows main loop and killing it. This is a known problem with the openCV
         for _ in range(10):
             cv2.waitKey(1)
@@ -54,8 +55,13 @@ class CameraWrapper(object):
 
 if __name__=="__main__":
     print "PyInwentaryzator.camera - module responsible for making photos using a webcam."
-    import time
     for x in range(10):
-        c = CameraWrapper(x)
-        time.sleep(10)
-        c.close()
+        print "Trying to open camera number ", x
+        try:
+            c = CameraWrapper(x)
+        except Exception as e:
+            print "Failed to open camera number ",x ," because:"
+            print str(e)
+        else:
+            time.sleep(10)
+            c.close()
