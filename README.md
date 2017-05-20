@@ -28,3 +28,9 @@ Projects technical requirements
 2. Each photo should have an unique pseudo-random file name.
 3. The photos pseudo-random name should be used to reference the photo in the CSV database.
 4. Keep It Simple you Stupid.
+
+Requirements
+------
+1. Ubuntu 16.04.2 LTS
+2. CPython 2.7.12
+3. python-opencv 2.4.9.1 : `sudo apt-get install python-opencv`
