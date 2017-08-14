@@ -12,7 +12,7 @@ import Queue
 class CameraWrapper(object):
     """
     A basic wrapper for opencv python camera API
-    :ivar _message_queue: Internal message queue used to communicate with the main loop. Messages format is: 
+    :ivar _message_queue: Internal message queue used to communicate with the main loop. Messages format is:
                             (<return event>, <message>, *<args)
     :ivar _loop_thread: The main thread containing the main loop
     """
@@ -24,16 +24,17 @@ class CameraWrapper(object):
     _loop_thread = None
     _message_queue = None
 
-    def __init__(self, camera_id):
+    def __init__(self, camera_index):
         """
         Initialize selected camera and a preview window.
         :type camera_id: int
         """
+        self.camera_index = camera_index
         self._message_queue = Queue.Queue()
         self._keep_the_loop_running = True
-        camera = cv2.VideoCapture(camera_id)
+        camera = cv2.VideoCapture(camera_index)
         if not camera.isOpened():
-            raise IOError("Failed to open camera with id " + str(camera_id))
+            raise IOError("Failed to open camera with id " + str(camera_index))
         self._loop_thread = threading.Thread(target=self._the_loop, args=(camera,))
         self._loop_thread.start()
 
