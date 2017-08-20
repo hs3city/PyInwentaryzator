@@ -2,11 +2,11 @@ def log(msg):
     print msg
 
 
-def text_input(state, input_generator, char):
+def text_input(state, char, log):
     """
     Swallow all input up to "\n\n" sequence.
     :param state:
-    :param input_generator: iterable
+    :param log:
     :param char:
     :return: swallowed input
     """
