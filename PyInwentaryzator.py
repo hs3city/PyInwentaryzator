@@ -1,44 +1,77 @@
 #!/usr/bin/env python
 from getch import getch
 from camera import CameraWrapper
+from time import time, sleep
 
-print("Witaj inwentaryzatorze!")
+PLACES = 'places'
+INVENTORY = 'inventory'
+TAGS = 'tags'
+DATA_FOLDER = './data'
 
-#with open('./data.csv', 'a') as data_file:
 
-#print("Goodbye")
+def db_path(name):
+    return "{}/{}.csv".format(DATA_FOLDER, name)
 
 
-def choose_camera():
-  def change_camera(current_camera, next_camera, opened_camera):
-    """try to open and return the next camera. In case of failure open current
-    :type current: int
-    :type next_camera: int
-    :param current: index of the currently opened camera
-    :param next_camera: index of the currently opened camera
-    :return: tuple containing opened camera id and instance of the CameraWrapper"""
-    opened_camera.close()
+def open_db(filename):
+    path = db_path(filename)
     try:
-      return next_camera, CameraWrapper(next_camera)
-    except:
-      return current_camera, CameraWrapper(current_camera)
+        return open(path, 'a')
+    except Exception:
+        open(path, 'w').close()
+    return open(path, 'a')
 
 
-  choosen_camera = 0
-  camera_instance = CameraWrapper(choosen_camera)
-  _exit = False
-  actions = {
-    'j': lambda: change_camera(choose_camera, choosen_camera+1, camera_instance),
-    'k': lambda: change_camera(choose_camera, choosen_camera-1, camera_instance),
-    '\r': lambda: None,
-  }
-  while _exit == False:
-    print("press [j]/[k] to switch to next/previous camera, or enter to accept the current one")
+def read_db(filename):
+    path = db_path(filename)
     try:
-      choosen_camera, camera_instance = actions[getch()]()
-    except KeyError:
-      print "unknown command, please try again"
+        fh = open(path, 'r')
+        return map(lambda l: l.split(','), fh.readlines())
+    except Exception:
+        open(path, 'w').close()
+    return []
 
 
+def read_list(filename):
+    list = read_db(filename)
+    list = map(lambda row: row[0].strip()[1:-1], list)
+    if len(list) == 0:
+        list = ["None"]
+    return list
 
-camera = choose_camera()
+
+places = read_list(PLACES)
+
+with open_db(INVENTORY) as inventory_table, \
+        open_db(PLACES) as places_table, \
+        CameraWrapper(0) as camera:
+    sleep(1)
+    print("\n" * 120)
+    while True:
+        print("Press [Enter] to take a photo, [p] to add a place[q] to quit")
+        user_input = getch()
+        #print("{} ; {}".format(user_input, ord(user_input)))
+        if user_input in (chr(10), chr(13)):
+            picture = "{}/{}.jpg".format(DATA_FOLDER, time())
+            camera.take_picture(picture)
+            name = raw_input("Item name:")
+            print("Places:")
+            print('\n'.join(["{}: {}".format(offset, places[offset]) for offset in range(len(places))]))
+            place = raw_input("choose storage place:")
+            print("")
+            tags = raw_input("List of comma-separated tags:")
+            line = '"' + ('","'.join([name, places[int(place)], tags, picture])) + '"\n'
+            inventory_table.write(line)
+            print("")
+        elif user_input == 'p':
+            place = raw_input("Place name:")
+            places.append(place)
+            places_table.writelines(['"{}"\n'.format(place)])
+            print("")
+        elif user_input == 'q':
+            exit(0)
+        else:
+            print("Something went wrong, try again.")
+            
+        inventory_table.flush()
+        places_table.flush()

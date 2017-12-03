@@ -86,6 +86,12 @@ class CameraWrapper(object):
         """Stop the camera and destroy the preview"""
         self._send_message_sync(CameraWrapper.Messages.STOP)
 
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
 if __name__ == "__main__":
     print "PyInwentaryzator.camera - module responsible for making photos using a webcam."
 
