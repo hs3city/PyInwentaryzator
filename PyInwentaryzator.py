@@ -7,6 +7,7 @@ PLACES = 'places'
 INVENTORY = 'inventory'
 TAGS = 'tags'
 DATA_FOLDER = './data'
+CAMERA = 0
 
 
 def db_path(name):
@@ -44,7 +45,7 @@ places = read_list(PLACES)
 
 with open_db(INVENTORY) as inventory_table, \
         open_db(PLACES) as places_table, \
-        CameraWrapper(0) as camera:
+        CameraWrapper(CAMERA) as camera:
     sleep(1)
     print("\n" * 120)
     while True:
