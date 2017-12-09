@@ -6,3 +6,9 @@
 !LICENSE
 !.gitignore
 !*.py
+!data/
+data/*
+!data/*.jpg
+!data/inventory.csv
+!data/places.csv
+
